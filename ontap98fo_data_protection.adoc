@@ -1,0 +1,135 @@
+---
+sidebar: sidebar 
+permalink: ontap98fo_data_protection.html 
+keywords: 'TR-4872, Data Protection, Security, Secure Purge, IPSec, NetApp Volume Encryption, NVE, SnapMirror Cloud, SnapMirror Business Continuity (SM-BC)' 
+summary: In questa pagina vengono descritti i più recenti miglioramenti della protezione dei dati per ONTAP 9.8, tra cui la nozione di replica off-site dei dati, nonché la protezione dei dati in-flight e a riposo. 
+---
+= Protezione dei dati
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./media/
+
+
+La protezione dei dati nel contesto di questo documento si riferisce sia alla nozione di replica off-site dei dati, sia alla protezione dei dati in volo e a riposo. In questa sezione vengono descritti i più recenti miglioramenti della protezione dei dati per ONTAP 9.8.
+
+
+
+== Sicurezza
+
+Ogni release di ONTAP integra nuove funzionalità di sicurezza e miglioramenti, e ONTAP 9.8 non è diverso a questo proposito. Per ulteriori informazioni sulle funzionalità di protezione di ONTAP, vedere https://www.netapp.com/pdf.html?item=/media/10674-tr4569pdf.pdf["TR-4569: Guida al rafforzamento della sicurezza per ONTAP 9"^].
+
+
+
+=== Spurgo sicuro
+
+In ambienti con dati classificati o sensibili, la scrittura di un file erroneamente su un volume accessibile a persone che non dovrebbero avere accesso a tale file crea ciò che è noto come perdita di dati. In questo modo si crea uno scenario in cui è necessario eliminare interi volumi e rimuovere i dischi per eliminare il problema.
+
+NetApp Volume Encryption e Secure Purge hanno fornito un modo per mitigare questi potenziali disastri offrendo un modo per eliminare crittograficamente i singoli file eliminando la chiave di crittografia di sicurezza associata al file. Una volta terminata la chiave, i dati non possono più essere ripristinati dal disco. Questo processo è stato validato esternamente da un'azienda di recupero dati utilizzando le linee guida NIST SP 800-88 per l'igienizzazione dei supporti.
+
+Tuttavia, anche l'eliminazione sicura aveva i suoi limiti; ad esempio, se si deve eliminare un file, sarebbe necessario eseguire uno spostamento del volume, che richiede spazio disponibile nel sistema. Se si dispone di SnapMirror, è necessario eseguire una nuova baseline dopo un'operazione di eliminazione sicura.
+
+L'eliminazione sicura di ONTAP 9.8 elimina tali limitazioni:
+
+* Una semplice procedura in-place per la crittografia dei file.
+* Consente di mantenere i mirror SnapMirror esistenti in posizione senza necessità di eseguire una nuova baseline.
+
+
+
+
+=== IPSec
+
+IPSec è un meccanismo standard per eseguire la crittografia indipendente dalle applicazioni via cavo. Con IPSec, è possibile crittografare il traffico di rete indipendentemente dal protocollo in uso. Ciò offre opportunità di semplificazione, in particolare con NFS, dove la crittografia Kerberos è difficile da configurare e utilizzare, oltre a fornire l'unico modo per crittografare il traffico iSCSI via cavo.
+
+ONTAP 9.8 aggiunge ora il supporto per IPSec. L'implementazione ONTAP di IPSec sfrutta un segreto o una chiave precondivisa (PSK) con il client di connessione. Tali client includono qualsiasi sistema operativo recente che sfrutta IKEv2 con PSK. Si noti che il sistema operativo Windows non supporta IKEv2 con PSK.
+
+
+
+=== Trusted Platform Module
+
+Con il nuovo TPM (Trusted Platform Module) di ONTAP 9.8, le chiavi di crittografia per il gestore delle chiavi di accesso sono sigillate dal TPM fisico, offrendo maggiore sicurezza e protezione. Il passaggio al TPM è un processo senza interruzioni.
+
+
+
+=== Crittografia dei volumi NetApp
+
+NetApp Volume Encryption (NVE) è una soluzione software che consente la crittografia di qualsiasi volume di dati su qualsiasi tipo di disco in cui è attivato, con una chiave univoca per ciascun volume. Questa funzione è disponibile da ONTAP 9.1.
+
+ONTAP 9.8 offre il supporto NVE ai volumi root del nodo, che contengono file di log, backup della configurazione del cluster, file core e altre informazioni relative al sistema che si desidera proteggere con la crittografia conforme a FIPS-140-2.
+
+
+
+== SnapMirror Cloud
+
+SnapMirror è una tecnologia di replica leader del settore di ONTAP che consente agli amministratori dello storage di creare copie esatte dei set di dati attraverso una connessione WAN e di replicare solo i blocchi modificati per ridurre l'utilizzo della rete.
+
+Nelle ultime release di ONTAP, il supporto di SnapMirror è stato esteso per includere sistemi non ONTAP, come ad esempio https://blog.netapp.com/introducing-snapmirror-for-solidfire-element-os-enabling-data-replication-across-the-data-fabric/["Sistema operativo SolidFire Element"^]. ONTAP 9.8 offre ora un modo per sfruttare SnapMirror per replicare su cloud o bucket di oggetti S3 on-premise.
+
+image:ontap98fo_image23.png["Errore: Immagine grafica mancante"]
+
+Sfruttando il nuovo https://blog.netapp.com/new-backup-architecture-snapdiff-v3["Motore SnapDiff 3.0"^], SnapMirror è in grado di replicare in modo sicuro ed efficiente i dati dai volumi NAS ONTAP ai bucket di storage a oggetti. In questo modo si ottiene la mobilità del cloud ibrido attraverso il data fabric ONTAP.
+
+* I backup efficienti in termini di spazio delle snapshot nello storage a oggetti cloud preservano l'efficienza dello storage.
+* Supporta il ripristino di volumi completi e file singoli
+
+
+In ONTAP 9.8, SnapMirror Cloud richiede l'orchestrazione con uno dei due metodi seguenti. Non è supportato in System Manager o direttamente tramite API o CLI.
+
+* Attraverso un'applicazione partner ISV con licenza che crea e gestisce i flussi di lavoro di backup e ripristino. È richiesta una licenza SnapMirror Cloud.
+* Tramite Cloud Backup Service. Non è richiesta una licenza SnapMirror Cloud.
+
+
+Per ulteriori informazioni su SnapDiff e SnapMirror Cloud, consultare le seguenti risorse:
+
+* https://soundcloud.com/techontap_podcast/episode-264-netapp-ontap-snapdiff["Podcast di Tech OnTap - episodio 264: NetApp ONTAP SnapDiff"^]
+* https://soundcloud.com/techontap_podcast/episode-265-netapp-snapmirror-cloud-featuring-prolion["Podcast di Tech OnTap - episodio 265: Cloud NetApp SnapMirror con ProLion"^]
+* https://blog.netapp.com/new-backup-architecture-snapdiff-v3["NetApp Blog: Una nuova architettura di backup con SnapDiff/SnapMirror Cloud-v3"^]
+
+
+
+
+== Continuità aziendale SnapMirror (SM-BC)
+
+https://blog.netapp.com/snapmirror-synchronous-ontap-9-6/["SnapMirror sincrono"^] (SM-S) è stato introdotto in ONTAP 9.5 e offre una replica sincrona dei dati granulare ed efficiente in termini di storage, da cui le aziende dipendono per il backup, il disaster recovery e la mobilità dei dati. SM-S replica i dati sui volumi NetApp FlexVol tra sistemi storage ONTAP completamente ridondanti ubicati in data center o aree metropolitane con un tempo di andata e ritorno (RTT) inferiore a 10 ms per raggiungere un obiettivo di zero recovery point e un obiettivo di tempo di recovery quasi nullo.
+
+ONTAP 9.8 adotta il concetto di SnapMirror Synchronous negli ambienti SAN e offre una funzionalità di failover automatizzato per le applicazioni del gruppo Consistency, utilizzando System Manager per la configurazione e ONTAP Mediator per gestire e mantenere la business continuity in caso di interruzione. Poiché la relazione è sincrona, le applicazioni non perderanno alcun colpo durante il failover. La versione iniziale di SnapMirror Business Continuity supporta solo i carichi di lavoro SAN (iSCSI e FCP).
+
+Per ulteriori informazioni su SnapMirror Business Continuity, vedere https://soundcloud.com/techontap_podcast/episode-267-snapmirror-business-continuity-sm-bc-for-ontap-98["Podcast di Tech OnTap - episodio 267: Continuità aziendale di SnapMirror"^].
+
+
+
+== MetroCluster
+
+Il software NetApp MetroCluster (MC) è una soluzione che combina il clustering basato su array con la replica sincrona per offrire disponibilità continua e nessuna perdita di dati al costo più basso. L'amministrazione del cluster basato su array è più semplice perché le dipendenze e la complessità normalmente associate al clustering basato su host vengono eliminate.
+
+image:ontap98fo_image24.png["Errore: Immagine grafica mancante"]
+
+MetroCluster duplica immediatamente tutti i dati mission-critical transazione per transazione, fornendo un accesso ininterrotto alle applicazioni e ai dati. A differenza delle soluzioni di replica dei dati standard, MetroCluster funziona perfettamente con l'ambiente host per garantire la disponibilità continua dei dati, eliminando al contempo la necessità di creare e gestire complicati script di failover.
+
+Con MetroCluster, è possibile eseguire le seguenti operazioni:
+
+* Protezione da guasti hardware, di rete o del sito con uno switchover trasparente
+* Elimina i downtime pianificati e non pianificati e la gestione delle modifiche
+* Aggiorna hardware e software senza interrompere le operazioni
+* Implementazione senza complesse dipendenze di scripting, applicazioni o sistemi operativi
+* Disponibilità continua per VMware, Microsoft, Oracle, SAP o qualsiasi applicazione critica
+
+
+ONTAP 9.8 offre i seguenti miglioramenti delle funzionalità per MetroCluster.
+
+* *Nuovo supporto per piattaforme entry-level e midrange.* NetApp AFF A250, FAS500f, FAS8300, FAS 8700 ibrido e A400. Per le nuove installazioni di A220, FAS2750 e FAS500f, è ora possibile specificare una VLAN superiore a 100 e inferiore a 4096.
+* *Transizione senza interruzioni da MC-FC a MC-IP.* solo cluster a quattro nodi; MCC a due nodi richiede downtime. Semplice da spostare su MC IP nel prossimo aggiornamento tecnico.
+* *Aggregati senza mirror ora supportati per MC IP.* replicare solo gli aggregati desiderati nel sito di failover per una maggiore granularità applicativa.
+* Supporto per lo switch Cisco 9336C-FX2 e per A400, FAS 8300 e FAS 8700 sullo switch BES-53248 con una licenza aggiuntiva per porta 100G.
+
+
+Per ulteriori informazioni su MetroCluster, consultare le seguenti risorse:
+
+* https://www.netapp.com/us/media/tr-4375.pdf["TR-4375: MetroCluster FC per ONTAP 9.7"^]
+* https://www.netapp.com/us/media/tr-4689.pdf["TR-4689: Architettura e progettazione della soluzione IP di MetroCluster"^]
+* https://www.netapp.com/pdf.html?item=/media/13480-tr4705pdf.pdf["TR-4705: Architettura e progettazione della soluzione NetApp MetroCluster"^]
+
+
+link:ontap98fo_vmware_virtualization.html["Avanti: Virtualizzazione VMware"]

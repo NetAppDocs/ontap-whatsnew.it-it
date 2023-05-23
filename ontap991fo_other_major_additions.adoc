@@ -1,0 +1,83 @@
+---
+sidebar: sidebar 
+permalink: ontap991fo_other_major_additions.html 
+keywords: FlexGroup, S3, NFSv4.2, MAC, 
+summary: Oltre ai miglioramenti di Gestione di sistema, ALLE SAN e alla protezione dei dati, ONTAP 9.9 è stato ulteriormente migliorato. 
+---
+= Altre importanti aggiunte
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./media/
+
+
+Oltre ai miglioramenti di Gestione di sistema, ALLE SAN e alla protezione dei dati, ONTAP 9.9 è stato ulteriormente migliorato.
+
+
+
+== Contabilità/applicazione dello spazio logico – volumi FlexGroup
+
+La contabilità dello spazio logico è stata introdotta per i volumi FlexVol in ONTAP 9.4. Consente agli amministratori dello storage di mascherare i risparmi in termini di efficienza dello storage in modo che gli utenti finali evitino di allocare in eccesso le quote di storage designate.
+
+Ad esempio, se un utente scrive 6 TB in un volume da 10 TB e l'efficienza dello storage risparmia 2 TB, la contabilità dello spazio logico può controllare se l'utente vede 6 TB o 4 TB.
+
+image:ontap991fo_image17.png["Errore: Immagine grafica mancante"]
+
+ONTAP 9.5 ha migliorato questa funzionalità e aggiunto il supporto per l'imposizione delle quote per FlexVol per offrire un maggiore controllo agli amministratori dello storage impedendo nuove scritture in base alle soglie dello spazio logico impostate. Tuttavia, i volumi FlexGroup non avevano questa funzionalità fino a ONTAP 9.9.1.
+
+
+
+== Tag di metadati definiti dall'utente di ONTAP S3
+
+ONTAP 9.8 ha introdotto il supporto per il protocollo S3 per la funzionalità di storage a oggetti di base.
+
+Il supporto per S3 in ONTAP 9.8 include quanto segue:
+
+* Accesso a oggetti PUT/GET di base (non include l'accesso a S3 e NAS dallo stesso bucket)
++
+** Nessun tag di oggetti o supporto ILM; per S3 ricchi di funzionalità e distribuiti a livello globale, utilizzare https://www.netapp.com/data-storage/storagegrid/["NetApp StorageGRID"^].
+
+
+* Crittografia TLS 1.2
+* Upload di più parti
+* Porte regolabili
+* Più bucket per volume
+* Policy di accesso bucket
+* S3 come target NetApp FabricPool
+
+
+ONTAP 9.9.1 e versioni successive offrono il supporto per il tag dei metadati degli oggetti quando si utilizzano le chiamate ObjectCreate e MultiPartUpload. Quando HEAD o GET viene eseguito su un oggetto, i metadati definiti dall'utente e il numero di tag vengono restituiti come parte dell'intestazione HTTP nella risposta. Questi tag consentono di classificare meglio gli oggetti all'interno dei bucket ONTAP per una gestione dei dati più efficace e sono compatibili con le applicazioni che richiedono la possibilità di creare metadati e tag.
+
+Per ulteriori informazioni, consultare le seguenti risorse:
+
+* https://soundcloud.com/techontap_podcast/episode-268-netapp-fabricpool-and-s3-in-ontap-98["Podcast Tech OnTap: Episodio 268 - NetApp FabricPool e S3 in ONTAP 9.8"^]
+* https://www.netapp.com/us/media/tr-4814.pdf["ONTAP S3"^]
+
+
+
+
+== Etichette di sicurezza NFSv4.2
+
+ONTAP 9.9.1 introduce il supporto per la funzionalità NFSv4.2 chiamata NFS Labeled, un metodo per gestire l'accesso granulare a file e cartelle utilizzando le etichette SELinux e il controllo di accesso obbligatorio (MAC). Queste etichette MAC sono memorizzate con file e cartelle e funzionano in combinazione con le autorizzazioni UNIX e gli ACL NFSv4.x. Il supporto per NFS etichettati significa che ONTAP ora riconosce e comprende le impostazioni dell'etichetta SELinux del client NFS. L'etichetta NFS viene trattata in https://tools.ietf.org/html/rfc7204["RFC-7204"^].
+
+I casi di utilizzo includono:
+
+* Etichettatura MAC delle immagini delle macchine virtuali
+* Classificazione della sicurezza dei dati per il settore pubblico (segreto, top secret e così via)
+* Conformità alla sicurezza
+* Linux senza disco
+
+
+In questa release, ONTAP supporta le seguenti modalità di applicazione:
+
+* https://tools.ietf.org/html/rfc7204["Modalità server limitata"^]. ONTAP non può applicare le etichette, ma può memorizzarle e trasmetterle.
++
+** Anche la possibilità di modificare le etichette MAC è compito del client.
+
+
+* https://tools.ietf.org/html/rfc7204["Modalità ospite"^]. Se il client non è etichettato NFS-aware (v4.1 o inferiore), le etichette MAC non vengono trasmesse.
+
+
+ONTAP non supporta attualmente https://tools.ietf.org/html/rfc7204["Full Mode (modalità completa)"^] (Memorizzazione e applicazione delle etichette MAC).

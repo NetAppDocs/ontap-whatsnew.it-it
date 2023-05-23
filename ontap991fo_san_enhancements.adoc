@@ -1,0 +1,70 @@
+---
+sidebar: sidebar 
+permalink: ontap991fo_san_enhancements.html 
+keywords: SAN array, ASA, Scale out, NVMe/FC, NVMe over Fibre Channel 
+summary: ONTAP 9.9.1 offre alcuni importanti miglioramenti relativi ALLA SAN. In questa sezione vengono descritte tali funzionalità e vengono forniti collegamenti a documenti che illustrano in dettaglio tali funzionalità. 
+---
+= Miglioramenti SAN
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./media/
+
+
+ONTAP 9.9.1 offre alcuni importanti miglioramenti relativi ALLA SAN. In questa sezione vengono descritte tali funzionalità e vengono forniti collegamenti a documenti che illustrano in dettaglio tali funzionalità.
+
+
+
+== Tutti i miglioramenti DEGLI array SAN
+
+ONTAP 9.8 ha introdotto il https://www.netapp.com/pdf.html?item=/media/10379-tr4515pdf.pdf["Tutti gli array SAN"^] (ASA) al portfolio di prodotti NetApp. In ONTAP 9.9.1, ASA ha alcune aggiunte molto ambite.
+
+
+
+=== Scale-out da due nodi a 12 nodi
+
+Prima di ONTAP 9.9.1, ASA poteva essere solo un cluster a due nodi. Tuttavia, i cluster SAN in ONTAP possono scalare fino a 12 nodi, il che fornisce scalabilità orizzontale aggiuntiva per le performance e la capacità negli ambienti SAN aziendali. Ora, ASA può scalare fino a 12 nodi in un singolo cluster, a condizione che tutti i nodi del cluster abbiano la personalità ASA. I modelli ASA possono essere combinati nello stesso cluster (ad esempio, una coppia ha A400 a due nodi con una coppia ha A800 a due nodi).
+
+
+
+=== Supporto NVMe/FC
+
+ASA è ora in grado di sfruttare NVMe a latenza ultra bassa su Fibre Channel in ONTAP 9.9.1. È sufficiente una licenza per gli adattatori di destinazione NVMe/FC e FC da 32 GB.
+
+
+
+=== Conversione in-place da SAN AFF a ASA
+
+Con l'assistenza di uno script e delle risorse NetApp TME o dei servizi professionali, è possibile convertire i cluster SAN AFF esistenti in personalità ASA senza la necessità di migrare i dati. L'unico prerequisito è che se il cluster fornisce dati NAS o S3, tali protocolli e set di dati devono essere rimossi prima della conversione.
+
+
+
+== Performance del LUN singolo
+
+Sia le piattaforme ASA che i cluster SAN AFF ottengono i benefici delle modifiche apportate a ONTAP 9.9.1 che migliorano notevolmente le prestazioni di un singolo LUN nei carichi di lavoro di picco attraverso la parallelizzazione dello stack SCSI con il LUN.
+
+Nella tabella seguente, i test su una piattaforma A800 e A300 confrontano le performance per un singolo carico di lavoro LUN, con performance quasi 4 volte superiori per le letture e performance migliori del 75% per le scritture su AFF A800 in ONTAP 9.9.1 rispetto allo stesso carico di lavoro in ONTAP 9.8.
+
+|===
+| Piattaforma | IOPS di picco a lettura casuale | IOPS di picco di scrittura casuale 
+
+
+| R800 | +393% | +75% 
+
+
+| R300 | +245% | +3.5% 
+|===
+
+NOTE: Questi miglioramenti non interessano le applicazioni multi-LUN (come Logical Volume Manager).
+
+
+
+== Miglioramenti di NVMe over Fibre Channel
+
+In ONTAP 9.9.1, gli spazi dei nomi NVMe su Fibre Channel possono ora eseguire il failover tramite un percorso remoto inattivo, fornendo una maggiore resilienza generale per le applicazioni NVMe/FC.
+
+image:ontap991fo_image10.png["Errore: Immagine grafica mancante"]
+
+Inoltre, ONTAP 9.9.1 introduce il supporto per NVMe/FC con i workload di virtualizzazione VMware fornendo supporto vVol e provisioning degli spazi dei nomi tramite vCenter.
